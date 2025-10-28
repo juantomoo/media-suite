@@ -1,0 +1,111 @@
+version: "3.8"
+
+networks:
+  media:
+    name: media
+    driver: bridge
+
+services:
+  init-media:
+    image: alpine:3.20
+    container_name: init-media-lidarr
+    command: ["/bin/sh", "-c", "mkdir -p /data/Musics /data/downloads/torrents /data/downloads/usenet && chown -R 1000:1000 /data && chmod -R 775 /data"]
+    restart: "no"
+    networks:
+      - media
+    volumes:
+      - /srv/media:/data
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    restart: unless-stopped
+    networks:
+      - media
+    ports:
+      - "8686:8686"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+      - UMASK=002
+    volumes:
+      - /opt/lidarr/config:/config
+      - /srv/media:/data
+    depends_on:
+      init-media:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8686" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    networks:
+      - media
+    ports:
+      - "8687:8687"     # WebUI
+      - "8689:8689"     # Peer TCP
+      - "8689:8689/udp" # Peer UDP
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+      - WEBUI_PORT=8687
+    volumes:
+      - /opt/qbittorrent/config:/config
+      - /srv/media:/data
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
+    networks:
+      - media
+    ports:
+      - "8688:9696"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+    volumes:
+      - /opt/prowlarr/config:/config
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - media
+    ports:
+      - "8690:8191"
+    environment:
+      - LOG_LEVEL=info
+      - TZ=America/Bogota
+
+  ape-cue-splitter:
+    build:
+      context: ./ape-converter
+    image: local/ape-cue-splitter:latest
+    container_name: ape-cue-splitter
+    restart: unless-stopped
+    networks:
+      - media
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Bogota
+      - WATCH_DIR=/data/downloads
+      - OUTPUT_MODE=sidecar   # sidecar or in_place
+      - DELETE_SOURCE=false   # set true to remove .ape/.cue after split
+    volumes:
+      - /srv/media:/data
+    depends_on:
+      init-media:
+        condition: service_completed_successfully
+
+
