@@ -90,7 +90,6 @@ services:
   ape-cue-splitter:
     build:
       context: ./ape-converter
-    image: local/ape-cue-splitter:latest
     container_name: ape-cue-splitter
     restart: unless-stopped
     networks:
