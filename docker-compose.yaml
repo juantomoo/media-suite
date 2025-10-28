@@ -108,4 +108,36 @@ services:
       init-media:
         condition: service_completed_successfully
 
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    networks:
+      - media
+    ports:
+      - "8691:4533"
+    environment:
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+      - ND_SESSIONTIMEOUT=24h
+      - ND_BASEURL=/navidrome
+    volumes:
+      - /opt/navidrome/config:/data
+      - /srv/media:/music:ro
+
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    networks:
+      - media
+    ports:
+      - "8692:80"
+    environment:
+      - FB_ROOT=/srv/media
+      - FB_DATABASE=/config/filebrowser.db
+    volumes:
+      - /opt/filebrowser/config:/config
+      - /srv/media:/srv/media
+
 

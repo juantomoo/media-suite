@@ -23,6 +23,8 @@
 - **qBittorrent**: `http://tu-servidor:8687`
 - **Prowlarr**: `http://tu-servidor:8688`
 - **FlareSolverr**: `http://tu-servidor:8690` (API interna)
+- **Navidrome**: `http://tu-servidor:8691` (Servidor de música)
+- **Filebrowser**: `http://tu-servidor:8692` (Gestor de archivos)
 
 ### Conversor APE+CUE
 - **Contenedor**: `ape-cue-splitter`

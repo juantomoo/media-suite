@@ -9,6 +9,8 @@ Este stack de Docker Compose incluye Lidarr, qBittorrent, Prowlarr, FlareSolverr
 - **Prowlarr**: Gestor de indexers
 - **FlareSolverr**: Resolvedor de CloudFlare para indexers protegidos
 - **APE-CUE Splitter**: Conversor automático de APE+CUE a FLAC con etiquetas
+- **Navidrome**: Servidor de música para streaming
+- **Filebrowser**: Gestor de archivos web para subir música manualmente
 
 ## 📁 Estructura de Volúmenes
 
@@ -82,6 +84,8 @@ environment:
 | qBittorrent | 8687 | Interfaz web |
 | Prowlarr | 8688 | Interfaz web |
 | FlareSolverr | 8690 | API interna |
+| Navidrome | 8691 | Servidor de música |
+| Filebrowser | 8692 | Gestor de archivos web |
 
 ### Configuración de Lidarr
 
@@ -92,12 +96,18 @@ environment:
    - Directorio de descargas: `/data/downloads`
 3. **No necesitas Remote Path Mapping** (todos comparten `/srv/media`)
 
-### Configuración de qBittorrent
+### Configuración de Filebrowser
 
-1. **Acceder a qBittorrent**: `http://tu-servidor:8687`
-2. **Configurar directorios**:
-   - Directorio de descargas: `/data/downloads/torrents`
-   - Directorio de música: `/data/Musics`
+1. **Acceder a Filebrowser**: `http://tu-servidor:8692`
+2. **Primera configuración**:
+   - Usuario por defecto: `admin`
+   - Contraseña por defecto: `admin`
+   - **Cambiar inmediatamente** la contraseña
+3. **Funcionalidades**:
+   - Subir archivos APE+CUE directamente a `/srv/media/downloads`
+   - El conversor automático los procesará
+   - Navegar por toda la estructura de música
+   - Gestión de archivos desde cualquier navegador
 
 ## 🔄 Migración desde Instalación Existente
 
