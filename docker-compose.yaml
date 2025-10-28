@@ -9,12 +9,24 @@ services:
   init-media:
     image: alpine:3.20
     container_name: init-media-lidarr
-    command: ["/bin/sh", "-c", "mkdir -p /data/Musics /data/downloads/torrents /data/downloads/usenet && chown -R 1000:1000 /data && chmod -R 775 /data"]
+    command: ["/bin/sh", "-c", "\
+      set -e; \
+      mkdir -p /data/Musics /data/downloads/torrents /data/downloads/usenet; \
+      chown -R 1000:1000 /data; chmod -R 775 /data; \
+      mkdir -p /optcfg/lidarr /optcfg/qbittorrent /optcfg/prowlarr /optcfg/navidrome /optcfg/filebrowser; \
+      chown -R 1000:1000 /optcfg/lidarr /optcfg/qbittorrent /optcfg/prowlarr /optcfg/navidrome /optcfg/filebrowser; \
+      chmod -R 775 /optcfg/lidarr /optcfg/qbittorrent /optcfg/prowlarr /optcfg/navidrome /optcfg/filebrowser \
+    "]
     restart: "no"
     networks:
       - media
     volumes:
       - /srv/media:/data
+      - /opt/lidarr/config:/optcfg/lidarr
+      - /opt/qbittorrent/config:/optcfg/qbittorrent
+      - /opt/prowlarr/config:/optcfg/prowlarr
+      - /opt/navidrome/config:/optcfg/navidrome
+      - /opt/filebrowser/config:/optcfg/filebrowser
 
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
