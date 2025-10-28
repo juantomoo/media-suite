@@ -132,6 +132,7 @@ services:
       - ND_LOGLEVEL=info
       - ND_SESSIONTIMEOUT=24h
       - ND_BASEURL=/navidrome
+      - ND_MUSICFOLDER=/music/Musics
     volumes:
       - /opt/navidrome/config:/data
       - /srv/media:/music:ro
